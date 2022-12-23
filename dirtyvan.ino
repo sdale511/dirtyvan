@@ -19,14 +19,76 @@ Robojax_L298N_DC_motor motor(IN1, IN2, ENA, true);
 
 
 void setup() {
-//  Serial.begin(115200);
   Serial.begin(9600);
+   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(10, OUTPUT);
+  pinMode(12, INPUT_PULLUP);
+  pinMode(11, INPUT_PULLUP);
   motor.begin();
-  //L298N DC Motor by Robojax.com
+  Serial.println("setup complete");
+}
+
+int gCount = 0;
+int dir = 0;
+int inPress = 0;
+
+void loop() {
+//  while(1) {
+  int newDir = -1;
+    int fwd = digitalRead(12);
+    int rev = digitalRead(11);
+  
+    if (inPress == 1 && fwd == HIGH && rev == HIGH) {
+      Serial.print("end press: ");
+      Serial.println(dir);
+      inPress = 0;
+    }
+    if (inPress == 1) return;
+
+    if (fwd == HIGH && rev == HIGH) {
+      newDir = 0;
+    } else if (fwd == LOW && rev == LOW) {
+      // no-opp
+    } else if (fwd == LOW) {
+      Serial.println("press fwd");
+      inPress = 1;
+      newDir = 1;
+    } else if (rev == LOW) {
+      Serial.println("press rev");
+      motor.rotate(motor1, 100, CCW);//run motor1 at 60% speed in CCW direction
+      inPress = 1;
+      newDir = 2;
+    }
+
+    if (newDir == -1 || newDir == dir) return; // no change;
+
+    Serial.print(gCount++);
+    Serial.print(" fwd: ");
+    Serial.print(fwd);
+    Serial.print(" rev: ");
+    Serial.print(rev);
+    Serial.print(" dir: ");
+    Serial.println(newDir);
+
+    if (newDir == 0) {
+      motor.brake(1);
+      digitalWrite(LED_BUILTIN, LOW);
+      digitalWrite(10, LOW);
+    } else if (newDir == 1) {
+      motor.rotate(motor1, 100, CW);
+      digitalWrite(LED_BUILTIN, HIGH);
+      digitalWrite(10, LOW);
+    } else if (newDir == 2) {
+      motor.rotate(motor1, 100, CCW);
+      digitalWrite(LED_BUILTIN, LOW);
+      digitalWrite(10, HIGH);
+    }
+    dir = newDir;
+    delay(100);
 
 }
 
-void loop() {
+void loopDemo() {
   
   motor.demo(1);
   motor.rotate(motor1, 60, CW);//run motor1 at 60% speed in CW direction
