@@ -1,41 +1,47 @@
+#include <Arduino.h>
 
-#include "Robojax_L298N_DC_motor.h"
-
-// motor 1 settings
-#define IN1 2
-#define IN2 4
-#define ENA 3 // this pin must be PWM enabled pin
-
-
+#include "L298N.h"
 
 const int CCW = 2; // counter clockwise
 const int CW  = 1; // clockwise
 const int NT  = 0; // not turning
 const int UNSET = -1;  // unset
 
-#define motor1 1 // do not change
+// globals
+int gCount = 0;    // loop counter
+int dir = NT;      // current direction
+bool inPress = false;  // is button currently pressed
+bool latch = true;    // latch mode - light stays on until second push
 
+const int IN1 = 2;
+const int IN2 = 4;
+const int ENA = 3;
+const int SPEED = 127;
+L298N motor(ENA, IN1, IN2);
 
-// use the line below for single motor
-Robojax_L298N_DC_motor motor(IN1, IN2, ENA, true);
-
+volatile int gSwitchOn = LOW;
+void switchPressed()
+{
+  gSwitchOn = digitalRead(2);
+  Serial.print("interupt: 2 - ");
+  Serial.println(gSwitchOn);
+}
 
 void setup() {
+  // put your setup code here, to run once:
   Serial.begin(9600);
-   pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(LED_BUILTIN, OUTPUT);
   pinMode(10, OUTPUT);
   pinMode(12, INPUT_PULLUP);
   pinMode(11, INPUT_PULLUP);
-  motor.begin();
+  attachInterrupt(digitalPinToInterrupt(2), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
+  motor.setSpeed(SPEED);  // 255 full
   Serial.println("setup complete");
 }
 
-int gCount = 0;
-int dir = NT;
-bool inPress = false;
-bool latch = false;
-
 void loop() {
+//  Serial.println(hello);
+  gCount++;
   int newDir = UNSET;
   int fwd = digitalRead(12);
   int rev = digitalRead(11);
@@ -70,7 +76,7 @@ void loop() {
 
   if (newDir == UNSET || newDir == dir) return; // no change;
 
-  Serial.print(gCount++);
+  Serial.print(gCount);
   Serial.print(" fwd: ");
   Serial.print(fwd);
   Serial.print(" rev: ");
@@ -79,15 +85,18 @@ void loop() {
   Serial.println(newDir);
 
   if (newDir == NT) {
-    motor.brake(1);
+//    motor.brake(1);
+    motor.stop();
     digitalWrite(LED_BUILTIN, LOW);
     digitalWrite(10, LOW);
   } else if (newDir == CW) {
-    motor.rotate(motor1, 100, CW);
+//    motor.rotate(motor1, 100, CW);
+    motor.forward();
     digitalWrite(LED_BUILTIN, HIGH);
     digitalWrite(10, LOW);
   } else if (newDir == CCW) {
-    motor.rotate(motor1, 100, CCW);
+//    motor.rotate(motor1, 100, CCW);
+    motor.backward();
     digitalWrite(LED_BUILTIN, LOW);
     digitalWrite(10, HIGH);
   }
