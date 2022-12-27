@@ -19,13 +19,16 @@ int dir = NT;      // current direction
 bool inPress = false;  // is button currently pressed
 bool latch = true;    // latch mode - light stays on until second push
 
-const int IN1 = 2;
-const int IN2 = 4;
-const int ENA = 3;
-const int SPEED = 127;
+const int PWM_PIN = 3;
 
-L298N motor(ENA, IN1, IN2);
-CytronMD cmotor(PWM_DIR, 3, 2);  // PWM = Pin 3, DIR = Pin 2.
+const int FWD_PIN = 2;
+const int REV_PIN = 4;
+L298N motor(PWM_PIN, FWD_PIN, REV_PIN);
+
+const int DIR_PIN = 2;
+CytronMD cmotor(PWM_DIR, PWM_PIN, DIR_PIN);
+
+const int SPEED = 255;  // 255 full
 
 volatile int gSwitchOn = LOW;
 void switchPressed()
@@ -43,7 +46,7 @@ void setup() {
   pinMode(12, INPUT_PULLUP);
   pinMode(11, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(2), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
-  motor.setSpeed(SPEED);  // 255 full
+  if (MOTOR_TYPE == MOTOR_LN298) motor.setSpeed(SPEED);
   Serial.println("setup complete");
 }
 

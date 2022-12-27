@@ -12,35 +12,32 @@
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug",
-            "executable": "/Users/scott/git/dirtyvan/.pio/build/zero/firmware.elf",
-            "projectEnvName": "zero",
-            "toolchainBinDir": "/Users/scott/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "executable": "/Users/scott/git/dirtyvan/.pio/build/uno/firmware.elf",
+            "projectEnvName": "uno",
+            "toolchainBinDir": "/Users/scott/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart",
-            "svdPath": "/Users/scott/.platformio/platforms/atmelsam/misc/svd/ATSAMD21G18A.svd",
             "preLaunchTask": {
                 "type": "PlatformIO",
-                "task": "Pre-Debug"
+                "task": "Pre-Debug (uno)"
             }
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (skip Pre-Debug)",
-            "executable": "/Users/scott/git/dirtyvan/.pio/build/zero/firmware.elf",
-            "projectEnvName": "zero",
-            "toolchainBinDir": "/Users/scott/.platformio/packages/toolchain-gccarmnoneeabi/bin",
-            "internalConsoleOptions": "openOnSessionStart",
-            "svdPath": "/Users/scott/.platformio/platforms/atmelsam/misc/svd/ATSAMD21G18A.svd"
+            "executable": "/Users/scott/git/dirtyvan/.pio/build/uno/firmware.elf",
+            "projectEnvName": "uno",
+            "toolchainBinDir": "/Users/scott/.platformio/packages/toolchain-atmelavr/bin",
+            "internalConsoleOptions": "openOnSessionStart"
         },
         {
             "type": "platformio-debug",
             "request": "launch",
             "name": "PIO Debug (without uploading)",
-            "executable": "/Users/scott/git/dirtyvan/.pio/build/zero/firmware.elf",
-            "projectEnvName": "zero",
-            "toolchainBinDir": "/Users/scott/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+            "executable": "/Users/scott/git/dirtyvan/.pio/build/uno/firmware.elf",
+            "projectEnvName": "uno",
+            "toolchainBinDir": "/Users/scott/.platformio/packages/toolchain-atmelavr/bin",
             "internalConsoleOptions": "openOnSessionStart",
-            "svdPath": "/Users/scott/.platformio/platforms/atmelsam/misc/svd/ATSAMD21G18A.svd",
             "loadMode": "manual"
         }
     ]
