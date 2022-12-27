@@ -30,6 +30,13 @@ CytronMD cmotor(PWM_DIR, PWM_PIN, DIR_PIN);
 
 const int SPEED = 255;  // 255 full
 
+const int LED_FWD = 13;
+const int LED_REV = 10;
+const int SWC_FWD = 12;
+const int SWC_BACK = 11;
+
+const int END_LOOP_DELAY = 100;
+
 volatile int gSwitchOn = LOW;
 void switchPressed()
 {
@@ -41,10 +48,10 @@ void switchPressed()
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  pinMode(LED_BUILTIN, OUTPUT);
-  pinMode(10, OUTPUT);
-  pinMode(12, INPUT_PULLUP);
-  pinMode(11, INPUT_PULLUP);
+  pinMode(LED_FWD, OUTPUT);
+  pinMode(LED_REV, OUTPUT);
+  pinMode(SWC_FWD, INPUT_PULLUP);
+  pinMode(SWC_BACK, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(2), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
   if (MOTOR_TYPE == MOTOR_LN298) motor.setSpeed(SPEED);
   Serial.println("setup complete");
@@ -98,19 +105,19 @@ void loop() {
   if (newDir == NT) {
     if (MOTOR_TYPE == MOTOR_LN298) motor.stop();
     if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(0);
-    digitalWrite(LED_BUILTIN, LOW);
-    digitalWrite(10, LOW);
+    digitalWrite(LED_FWD, LOW);
+    digitalWrite(LED_REV, LOW);
   } else if (newDir == CW) {
     if (MOTOR_TYPE == MOTOR_LN298) motor.forward();
     if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(255);
-    digitalWrite(LED_BUILTIN, HIGH);
-    digitalWrite(10, LOW);
+    digitalWrite(LED_FWD, HIGH);
+    digitalWrite(LED_REV, LOW);
   } else if (newDir == CCW) {
     if (MOTOR_TYPE == MOTOR_LN298) motor.backward();
     if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(-255);
-    digitalWrite(LED_BUILTIN, LOW);
-    digitalWrite(10, HIGH);
+    digitalWrite(LED_FWD, LOW);
+    digitalWrite(LED_REV, HIGH);
   }
   dir = newDir;
-  delay(100);
+  delay(END_LOOP_DELAY);  // removes any double sends from up or down switches
 }
