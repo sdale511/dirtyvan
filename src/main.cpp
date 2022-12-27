@@ -1,6 +1,12 @@
 #include <Arduino.h>
 
 #include "L298N.h"
+#include "CytronMotorDriver.h"
+
+const int MOTOR_CYTRON = 0;
+const int MOTOR_LN298 = 1;
+//const int MOTOR_TYPE = MOTOR_CYTRON;
+const int MOTOR_TYPE = MOTOR_LN298;
 
 const int CCW = 2; // counter clockwise
 const int CW  = 1; // clockwise
@@ -17,7 +23,9 @@ const int IN1 = 2;
 const int IN2 = 4;
 const int ENA = 3;
 const int SPEED = 127;
+
 L298N motor(ENA, IN1, IN2);
+CytronMD cmotor(PWM_DIR, 3, 2);  // PWM = Pin 3, DIR = Pin 2.
 
 volatile int gSwitchOn = LOW;
 void switchPressed()
@@ -85,18 +93,18 @@ void loop() {
   Serial.println(newDir);
 
   if (newDir == NT) {
-//    motor.brake(1);
-    motor.stop();
+    if (MOTOR_TYPE == MOTOR_LN298) motor.stop();
+    if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(0);
     digitalWrite(LED_BUILTIN, LOW);
     digitalWrite(10, LOW);
   } else if (newDir == CW) {
-//    motor.rotate(motor1, 100, CW);
-    motor.forward();
+    if (MOTOR_TYPE == MOTOR_LN298) motor.forward();
+    if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(255);
     digitalWrite(LED_BUILTIN, HIGH);
     digitalWrite(10, LOW);
   } else if (newDir == CCW) {
-//    motor.rotate(motor1, 100, CCW);
-    motor.backward();
+    if (MOTOR_TYPE == MOTOR_LN298) motor.backward();
+    if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(-255);
     digitalWrite(LED_BUILTIN, LOW);
     digitalWrite(10, HIGH);
   }
