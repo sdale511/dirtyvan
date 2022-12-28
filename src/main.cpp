@@ -2,6 +2,7 @@
 
 #include "L298N.h"
 #include "CytronMotorDriver.h"
+#include "SerialPrintf.h"
 
 const int MOTOR_CYTRON = 0;
 const int MOTOR_LN298 = 1;
@@ -14,59 +15,61 @@ const int NT  = 0; // not turning
 const int UNSET = -1;  // unset
 
 // globals
-int gCount = 0;    // loop counter
+long gCount = 0;    // loop counter
 int dir = NT;      // current direction
 bool inPress = false;  // is button currently pressed
 bool latch = true;    // latch mode - light stays on until second push
 
-const int PWM_PIN = 3;
+const int PIN_PWM = 5;
 
-const int FWD_PIN = 2;
-const int REV_PIN = 4;
-L298N motor(PWM_PIN, FWD_PIN, REV_PIN);
+const int PIN_FWD = 6;
+const int PIN_REV = 7;
+L298N motor(PIN_PWM, PIN_FWD, PIN_REV);
 
-const int DIR_PIN = 2;
-CytronMD cmotor(PWM_DIR, PWM_PIN, DIR_PIN);
+const int PIN_CYTRON_PWM = 3;
+const int PIN_CYTRON_DIR = 2;
+CytronMD cmotor(PWM_DIR, PIN_CYTRON_PWM, PIN_CYTRON_DIR);
 
 const int SPEED = 255;  // 255 full
 
 const int LED_FWD = 13;
-const int LED_REV = 10;
-const int SWC_FWD = 12;
-const int SWC_BACK = 11;
+const int LED_REV = 12;
+const int SWC_FWD = 2;
+const int SWC_REV = 3;
 
 const int END_LOOP_DELAY = 100;
 
-volatile int gSwitchOn = LOW;
+volatile int gFwd = LOW;
+volatile int gRev = LOW;
 void switchPressed()
 {
-  gSwitchOn = digitalRead(2);
-  Serial.print("interupt: 2 - ");
-  Serial.println(gSwitchOn);
+  gFwd = digitalRead(SWC_FWD);
+  gRev = digitalRead(SWC_REV);
+//  serial_printf(Serial, "interupt: FWD = %d, REV = %d\n", gFwd, gRev);
 }
 
 void setup() {
   // put your setup code here, to run once:
+  gCount = 0;
   Serial.begin(9600);
   pinMode(LED_FWD, OUTPUT);
   pinMode(LED_REV, OUTPUT);
   pinMode(SWC_FWD, INPUT_PULLUP);
-  pinMode(SWC_BACK, INPUT_PULLUP);
-  attachInterrupt(digitalPinToInterrupt(2), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
+  pinMode(SWC_REV, INPUT_PULLUP);
+//  attachInterrupt(digitalPinToInterrupt(SWC_FWD), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
+//  attachInterrupt(digitalPinToInterrupt(SWC_REV), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
   if (MOTOR_TYPE == MOTOR_LN298) motor.setSpeed(SPEED);
-  Serial.println("setup complete");
+  serial_printf(Serial, "setup complete: motor: %s\n", (MOTOR_TYPE == MOTOR_LN298 ? "LN298" : "CYTRON"));
 }
 
 void loop() {
-//  Serial.println(hello);
   gCount++;
   int newDir = UNSET;
-  int fwd = digitalRead(12);
-  int rev = digitalRead(11);
+  int fwd = digitalRead(SWC_FWD);
+  int rev = digitalRead(SWC_REV);
   
   if (inPress && fwd == HIGH && rev == HIGH) {
-    Serial.print("end press: ");
-    Serial.println(dir);
+    serial_printf(Serial, "%l - end press dir = %d\n", gCount, dir);
     inPress = false;
     delay(100);
     if (latch) return;  // remove for moment only
@@ -77,30 +80,27 @@ void loop() {
   }
 
   if (fwd == HIGH && rev == HIGH) {
-    if (!latch) newDir = NT;
+    if (!latch)  {
+      newDir = NT;
+      serial_printf(Serial, "%l - moment switch off, newDir = %d\n", gCount, newDir);
+    }
   } else if (fwd == LOW && rev == LOW) {
     // no-opp
   } else if (fwd == LOW) {
-    Serial.println("press fwd");
     inPress = true;
     if (dir == CW) newDir = NT;
     else newDir = CW;
+    serial_printf(Serial, "%l - press fwd, newDir = %d\n", gCount, newDir);
   } else if (rev == LOW) {
-    Serial.println("press rev");
     inPress = true;
     if (dir == CCW) newDir = NT;
     else newDir = CCW;
+    serial_printf(Serial, "%l - press rev, newDir = %d\n", gCount, newDir);
   }
 
   if (newDir == UNSET || newDir == dir) return; // no change;
 
-  Serial.print(gCount);
-  Serial.print(" fwd: ");
-  Serial.print(fwd);
-  Serial.print(" rev: ");
-  Serial.print(rev);
-  Serial.print(" dir: ");
-  Serial.println(newDir);
+  serial_printf(Serial, "%l - fwd = %d, rev = %d, dir = %d, newDir = %d\n", gCount, fwd, rev, dir, newDir);
 
   if (newDir == NT) {
     if (MOTOR_TYPE == MOTOR_LN298) motor.stop();
