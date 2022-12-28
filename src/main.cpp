@@ -41,11 +41,12 @@ const int END_LOOP_DELAY = 100;
 
 volatile int gFwd = LOW;
 volatile int gRev = LOW;
+// warning: you still get multiple up or down interrupts from the switches
 void switchPressed()
 {
   gFwd = digitalRead(SWC_FWD);
   gRev = digitalRead(SWC_REV);
-//  serial_printf(Serial, "interupt: FWD = %d, REV = %d\n", gFwd, gRev);
+  serial_printf(Serial, "interupt: FWD = %d, REV = %d\n", gFwd, gRev);
 }
 
 void setup() {
@@ -56,6 +57,7 @@ void setup() {
   pinMode(LED_REV, OUTPUT);
   pinMode(SWC_FWD, INPUT_PULLUP);
   pinMode(SWC_REV, INPUT_PULLUP);
+// sticking with loop logic as interrupts still give multiple events up or down  
 //  attachInterrupt(digitalPinToInterrupt(SWC_FWD), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
 //  attachInterrupt(digitalPinToInterrupt(SWC_REV), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
   if (MOTOR_TYPE == MOTOR_LN298) motor.setSpeed(SPEED);
