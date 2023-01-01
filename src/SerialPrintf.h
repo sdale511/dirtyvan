@@ -27,6 +27,7 @@
  * %%    - escaped percent ("%")
  * Thanks goes to @alw1746 for his %.4f precision enhancement 
  */
+
 void serial_printf(HardwareSerial& serial, const char* fmt, ...) { 
     va_list argv;
     va_start(argv, fmt);
