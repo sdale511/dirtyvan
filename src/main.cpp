@@ -19,11 +19,13 @@ const int UNSET = -1;  // unset
 
 // globals
 unsigned long gCount = 0;    // loop counter
+int gLastPressDir = NT;
+unsigned long gPressStart = 0;
 unsigned long gMotorStart = 0;
-unsigned long gMotorTimeout = 10000; // ms
-int dir = NT;      // current direction
-bool inPress = false;  // is button currently pressed
-bool latch = true;    // latch mode - light stays on until second push
+unsigned long gMotorBlinkTimeout = 3000;  // ms - blink light before timeout
+unsigned long gMotorTimeout = 35000; // ms - bed posts are 30s
+unsigned long gMinPressTime = 50; // ms
+int gDir = NT;      // current direction
 
 const int PIN_PWM = 6;
 const int PIN_FWD = 7;
@@ -49,8 +51,6 @@ const int LED_FWD = 9;
 const int LED_REV = 10;
 const int SWC_FWD = 11;
 const int SWC_REV = 12;
-
-const int END_LOOP_DELAY = 100;
 
 volatile int gFwd = LOW;
 volatile int gRev = LOW;
@@ -91,71 +91,97 @@ void setup() {
   serial_printf(Serial, "setup complete: motor: %s\n", motorType.c_str());
 }
 
+void setLights(int dir) {
+  if (dir == NT) {
+    digitalWrite(LED_FWD, LOW);
+    digitalWrite(LED_REV, LOW);
+  } else if (dir == CW) {
+    digitalWrite(LED_FWD, HIGH);
+    digitalWrite(LED_REV, LOW);
+  } else if (dir == CCW) {
+    digitalWrite(LED_FWD, LOW);
+    digitalWrite(LED_REV, HIGH);
+  }
+}
+
+void blinkLights() {
+  setLights(NT);
+  delay(500);
+  setLights(gDir);
+  delay(500);
+}
+
+void setDirection(int dir, unsigned long ts) {
+  serial_printf(Serial, "%l - setDirection - dir = %d\n", gCount, dir);
+  if (dir == NT) {
+    gMotorStart = 0;
+    if (MOTOR_TYPE == MOTOR_LN298) motor.stop();
+    if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(0);
+    if (MOTOR_TYPE == MOTOR_BTS7960) bmotor.stop();
+  } else if (dir == CW) {
+    gMotorStart = ts;
+    if (MOTOR_TYPE == MOTOR_LN298) motor.forward();
+    if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(255);
+    if (MOTOR_TYPE == MOTOR_BTS7960) bmotor.rotate(100, CW);
+  } else if (dir == CCW) {
+    gMotorStart = ts;
+    if (MOTOR_TYPE == MOTOR_LN298) motor.backward();
+    if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(-255);
+    if (MOTOR_TYPE == MOTOR_BTS7960) bmotor.rotate(100, CCW);
+  }
+  setLights(dir);
+  gDir = dir;
+}
+
 void loop() {
   gCount++;
   unsigned long ts = millis();
   int newDir = UNSET;
   int fwd = digitalRead(SWC_FWD);
   int rev = digitalRead(SWC_REV);
-  
-  if (inPress && fwd == HIGH && rev == HIGH) {
-    serial_printf(Serial, "%l - end press dir = %d\n", gCount, dir);
-    inPress = false;
-    delay(100);
-    if (latch) return;  // remove for moment only
-  }
- if (inPress) {
-    delay(100);
+
+  if ((gPressStart != 0) && (fwd == LOW || rev == LOW)) {
+    // we are in a press
     return;
   }
-  if (newDir != NT && gMotorStart != 0 && ts - gMotorStart > gMotorTimeout) {
-    newDir = NT;
-    serial_printf(Serial, "motor timeout = %ls\n", (ts - gMotorStart)/1000);
-  } else if (fwd == HIGH && rev == HIGH) {
-    if (!latch)  {
-      newDir = NT;
-      serial_printf(Serial, "%l - moment switch off, newDir = %d\n", gCount, newDir);
+
+  if (gMotorStart != 0) {
+    unsigned long onTime = ts - gMotorStart;
+    if (onTime <= gMotorTimeout && onTime >= (gMotorTimeout - gMotorBlinkTimeout)) {
+      serial_printf(Serial, "%l - motor about timeout = %l ms\n", gCount, (ts - gMotorStart));
+      blinkLights();
+    } else if (onTime > gMotorTimeout) {
+      serial_printf(Serial, "%l - motor timeout = %l ms\n", gCount, (ts - gMotorStart));
+      setDirection(NT, ts);
+      return;
     }
-  } else if (fwd == LOW && rev == LOW) {
-    // no-opp
+  }
+  
+  if (fwd == HIGH && rev == HIGH) {
+    if (gPressStart != 0) {
+      if ((ts - gPressStart) < gMinPressTime) {
+        setLights(gDir);
+        serial_printf(Serial, "%l - too quick = %l ms\n", gCount, (ts - gPressStart));
+        gPressStart = 0;
+        return;
+      } else  {
+        newDir = gLastPressDir;
+        if (gLastPressDir == gDir) newDir = NT;
+        serial_printf(Serial, "%l - end press dir = %d\n", gCount, newDir);
+        setDirection(newDir, ts);
+        gPressStart = 0;
+        gLastPressDir = 0;
+      }
+    }
   } else if (fwd == LOW) {
-    inPress = true;
-    if (dir == CW) newDir = NT;
-    else newDir = CW;
-    serial_printf(Serial, "%l - press fwd, newDir = %d\n", gCount, newDir);
+    gPressStart = ts;
+    gLastPressDir = CW;
+    setLights(CW);
+    serial_printf(Serial, "%l - press down fwd, newDir = %d\n", gCount, gLastPressDir);
   } else if (rev == LOW) {
-    inPress = true;
-    if (dir == CCW) newDir = NT;
-    else newDir = CCW;
-    serial_printf(Serial, "%l - press rev, newDir = %d\n", gCount, newDir);
-  }
-
-  if (newDir == UNSET || newDir == dir) return; // no change;
-
-  serial_printf(Serial, "%l - fwd = %d, rev = %d, dir = %d, newDir = %d\n", gCount, fwd, rev, dir, newDir);
-
-  if (newDir == NT) {
-    gMotorStart = 0;
-    if (MOTOR_TYPE == MOTOR_LN298) motor.stop();
-    if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(0);
-    if (MOTOR_TYPE == MOTOR_BTS7960) bmotor.stop();
-    digitalWrite(LED_FWD, LOW);
-    digitalWrite(LED_REV, LOW);
-  } else if (newDir == CW) {
-    gMotorStart = ts;
-    if (MOTOR_TYPE == MOTOR_LN298) motor.forward();
-    if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(255);
-    if (MOTOR_TYPE == MOTOR_BTS7960) bmotor.rotate(100, CW);
-    digitalWrite(LED_FWD, HIGH);
-    digitalWrite(LED_REV, LOW);
-  } else if (newDir == CCW) {
-    gMotorStart = ts;
-    if (MOTOR_TYPE == MOTOR_LN298) motor.backward();
-    if (MOTOR_TYPE == MOTOR_CYTRON) cmotor.setSpeed(-255);
-    if (MOTOR_TYPE == MOTOR_BTS7960) bmotor.rotate(100, CCW);
-    digitalWrite(LED_FWD, LOW);
-    digitalWrite(LED_REV, HIGH);
-  }
-  dir = newDir;
-  delay(END_LOOP_DELAY);  // removes any double sends from up or down switches
+    gPressStart = ts;
+    gLastPressDir = CCW;
+    setLights(CCW);
+    serial_printf(Serial, "%l - press down rev, newDir = %d\n", gCount, gLastPressDir);
+  }  
 }
