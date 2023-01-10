@@ -2,7 +2,7 @@
 
 #include "L298N.h"
 #include "CytronMotorDriver.h"
-#include <RobojaxBTS7960.h>
+#include "RobojaxBTS7960.h"
 #include "SerialPrintf.h"
 
 const int MOTOR_CYTRON = 0;
