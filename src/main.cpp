@@ -145,6 +145,7 @@ void loop() {
     return;
   }
 
+  // check for motor timeout if we are on
   if (gMotorStart != 0) {
     unsigned long onTime = ts - gMotorStart;
     if (onTime <= gMotorTimeout && onTime >= (gMotorTimeout - gMotorBlinkTimeout)) {
@@ -157,6 +158,7 @@ void loop() {
     }
   }
   
+  // handle release (both high) or fwd/rev push (one low)
   if (fwd == HIGH && rev == HIGH) {
     if (gPressStart != 0) {
       if ((ts - gPressStart) < gMinPressTime) {
