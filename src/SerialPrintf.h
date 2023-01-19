@@ -31,6 +31,8 @@
 #ifndef SerialPrintf_H
 #define SerialPrintf_H
 
+#include <Arduino.h>
+
 extern void serial_printf(HardwareSerial& serial, const char* fmt, ...);
 
 #endif
