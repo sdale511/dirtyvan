@@ -5,8 +5,7 @@
 
 // globals
 unsigned long gCount = 0;    // loop counter
-int gPushing = NT;           // the direction from current state - using for filtering noise
-bool gInPush =  false;       // are we in a single puah
+int gPushingDir = NT;           // the direction from current state - using for filtering noise
 bool gHandleNextPush = true;
 unsigned long gPressStart = 0;
 unsigned long gMotorStart = 0;
@@ -108,11 +107,11 @@ void loop() {
   if (fwd) newDir = CW;
   if (rev) newDir = CCW;
 
-  if (gPressStart == 0 || gPushing != newDir) {     // nothing pressed or a changed
+  if (gPressStart == 0 || gPushingDir != newDir) {     // nothing pressed or a changed
     // set on FWD, REV, NT (treat no press same so we can filter noise from the stop)
 //    serial_printf(Serial, "%l - state change = %l - %d\n", gCount, newDir);
     gPressStart = ts;
-    gPushing = newDir;
+    gPushingDir = newDir;
     return;
   } else if ((ts - gPressStart) < gMinPressTime) {  // filter change until duration confirms
 //    serial_printf(Serial, "%l - noise filter = %l ms\n", gCount, (ts - gPressStart));
@@ -124,7 +123,6 @@ void loop() {
     gHandleNextPush = true;
     return;
   }
-  gInPush = newDir != NT;
   serial_printf(Serial, "%l - push = %d, handle next - %d\n", gCount, newDir, gHandleNextPush);
   if (gHandleNextPush) {
     if (gDir == newDir) setDirection(NT, ts);
