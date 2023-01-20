@@ -37,7 +37,7 @@ DvMotor::DvMotor() {
 }
 
 void DvMotor::init() {
-  String motorType = "unknown";
+  String motorType = "";
 #ifdef MOTOR_LN298N
   lmotor.setSpeed(SPEED);
   motorType += "LN298";

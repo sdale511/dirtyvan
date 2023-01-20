@@ -36,6 +36,7 @@ void setup() {
   gCount = 0;
   gMotorStart = 0;
   Serial.begin(9600);
+  motor.init();
   pinMode(LED_FWD, OUTPUT);
   pinMode(LED_REV, OUTPUT);
   pinMode(SWC_FWD, INPUT_PULLUP);
