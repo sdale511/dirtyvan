@@ -20,6 +20,7 @@ const int LED_FWD = 9;
 const int LED_REV = 10;
 const int SWC_FWD = 11;
 const int SWC_REV = 12;
+const int SWC_KILL = 2;
 
 volatile int gFwd = LOW;
 volatile int gRev = LOW;
@@ -41,6 +42,7 @@ void setup() {
   pinMode(LED_REV, OUTPUT);
   pinMode(SWC_FWD, INPUT_PULLUP);
   pinMode(SWC_REV, INPUT_PULLUP);
+  pinMode(SWC_KILL, INPUT_PULLUP);
 // sticking with loop logic as interrupts still give multiple events up or down  
 //  attachInterrupt(digitalPinToInterrupt(SWC_FWD), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
 //  attachInterrupt(digitalPinToInterrupt(SWC_REV), &switchPressed, CHANGE);  // Uno,nano: 2,3 only, Uno Wifi: all, Zero: all but 4
@@ -103,6 +105,13 @@ void loop() {
   int newDir = NT;
   int fwd = !digitalRead(SWC_FWD);
   int rev = !digitalRead(SWC_REV);
+  int kill = digitalRead(SWC_KILL);  // default is closed
+
+  if (kill && gDir == CW) { // kill we are retracting and the switch trips
+    serial_printf(Serial, "%l - kill = %d\n", gCount, kill);
+    setDirection(NT, ts);
+    return;
+  }
 
   // set direction - rev has priority
   if (fwd) newDir = CW;
@@ -126,7 +135,8 @@ void loop() {
   }
   serial_printf(Serial, "%l - push = %d, handle next - %d\n", gCount, newDir, gHandleNextPush);
   if (gHandleNextPush) {
-    if (gDir == newDir) setDirection(NT, ts);
+    if (kill && newDir == CW) setDirection(NT, ts);  // kill switch is on - don't CW
+    else if (gDir == newDir) setDirection(NT, ts);  // second push of same direction toggles off
     else setDirection(newDir, ts);
     gHandleNextPush = false;
   }  
