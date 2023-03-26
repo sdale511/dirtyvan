@@ -28,6 +28,7 @@
  * Thanks goes to @alw1746 for his %.4f precision enhancement 
  */
 #include <Arduino.h>
+#include <stdarg.h>
 
 void serial_printf(HardwareSerial& serial, const char* fmt, ...) { 
     va_list argv;

@@ -6,7 +6,7 @@
 #define MOTOR_BTS7960
 
 #ifdef MOTOR_L298N
-#include "L298N.h"
+#include "motors/L298N.h"
 const int PIN_PWM = 6;
 const int PIN_FWD = 7;
 const int PIN_REV = 8;
@@ -14,14 +14,14 @@ L298N lmotor(PIN_PWM, PIN_FWD, PIN_REV);
 #endif
 
 #ifdef MOTOR_CYTRON
-#include "CytronMotorDriver.h"
+#include "motors/CytronMotorDriver.h"
 const int PIN_CYTRON_PWM = 3;
 const int PIN_CYTRON_DIR = 2;
 CytronMD cmotor(PWM_DIR, PIN_CYTRON_PWM, PIN_CYTRON_DIR);
 #endif
 
 #ifdef MOTOR_BTS7960
-#include "RobojaxBTS7960.h"
+#include "motors/RobojaxBTS7960.h"
 #define RPWM 5
 #define R_EN 4
 #define R_IS 3
