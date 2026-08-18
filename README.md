@@ -44,6 +44,19 @@ of them (see `platformio.ini`):
 - Arduino Zero (default build environment)
 - Arduino Nano (ATmega328)
 
+**Uno / Zero** (identical shield header):
+
+![Arduino Uno/Zero digital header pinout - D2 through D12 wired to the control panel and BTS7960 motor driver](docs/pinout-uno-zero.svg)
+
+**Nano** (right-hand header):
+
+![Arduino Nano right-hand header pinout - D2 through D12 wired to the control panel and BTS7960 motor driver](docs/pinout-nano.svg)
+
+An interactive version with a full legend and per-pin tables for all three
+boards is also published [here](https://claude.ai/code/artifact/0db66ead-f9d3-4a62-ab9d-c7dbca33ac03)
+(private to your Claude account unless you share it - the images above work
+for anyone viewing this repo).
+
 ### Motor driver
 
 Selected in `src/DvMotor.cpp` by uncommenting exactly one of:

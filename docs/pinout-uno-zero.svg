@@ -1,0 +1,103 @@
+<svg viewBox="0 0 900 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Arduino Uno/Zero digital header, pins RX0 through AREF left to right. Pins 2 through 12 are wired to the control panel and BTS7960 motor driver; the rest are unused.">
+  <rect width="900" height="300" fill="#f5f2e9" />
+
+  <!-- board body -->
+  <rect x="40" y="120" width="820" height="130" rx="6" fill="none" stroke="#1b2420" stroke-opacity="0.35" />
+  <!-- USB notch -->
+  <rect x="10" y="150" width="34" height="26" rx="2" fill="none" stroke="#1b2420" stroke-opacity="0.35" />
+  <text x="27" y="196" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#1b2420" opacity="0.45">USB</text>
+  <!-- reset button, orientation only -->
+  <circle cx="780" cy="230" r="8" fill="none" stroke="#1b2420" stroke-opacity="0.3" />
+  <text x="780" y="255" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#1b2420" opacity="0.4">RESET</text>
+
+  <!-- power+analog header, simplified/dimmed strip -->
+  <rect x="60" y="205" width="760" height="16" rx="2" fill="#1b2420" opacity="0.08" />
+  <text x="440" y="217" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#1b2420" opacity="0.5">POWER + ANALOG IN (A0&#8211;A5) &#8212; unused by this project</text>
+
+  <g font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#1b2420">
+    <circle cx="76" cy="140" r="5" fill="#1b2420" opacity="0.25" />
+    <text x="76" y="168" text-anchor="middle" opacity="0.55">RX0</text>
+    <circle cx="108" cy="140" r="5" fill="#1b2420" opacity="0.25" />
+    <text x="108" y="168" text-anchor="middle" opacity="0.55">TX1</text>
+  </g>
+
+  <!-- D2 kill (alarm) -->
+  <line x1="140" y1="140" x2="140" y2="70" stroke="#a5382d" stroke-width="1.5" />
+  <circle cx="140" cy="140" r="6" fill="#a5382d" />
+  <text x="140" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">2</text>
+  <text x="140" y="56" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#a5382d">SWC_KILL</text>
+  <text x="140" y="42" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="9" fill="#a5382d" opacity="0.8">kill switch</text>
+
+  <!-- D3 R_IS teal -->
+  <line x1="172" y1="140" x2="172" y2="90" stroke="#146a5c" stroke-width="1.5" />
+  <circle cx="172" cy="140" r="6" fill="#146a5c" />
+  <text x="172" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">3</text>
+  <text x="172" y="78" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#146a5c">R_IS</text>
+
+  <!-- D4 R_EN teal -->
+  <line x1="204" y1="140" x2="204" y2="70" stroke="#146a5c" stroke-width="1.5" />
+  <circle cx="204" cy="140" r="6" fill="#146a5c" />
+  <text x="204" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">4</text>
+  <text x="204" y="56" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#146a5c">R_EN</text>
+
+  <!-- D5 RPWM teal -->
+  <line x1="236" y1="140" x2="236" y2="90" stroke="#146a5c" stroke-width="1.5" />
+  <circle cx="236" cy="140" r="6" fill="#146a5c" />
+  <text x="236" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">5</text>
+  <text x="236" y="78" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#146a5c">RPWM</text>
+
+  <!-- D6 LPWM teal -->
+  <line x1="268" y1="140" x2="268" y2="70" stroke="#146a5c" stroke-width="1.5" />
+  <circle cx="268" cy="140" r="6" fill="#146a5c" />
+  <text x="268" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">6</text>
+  <text x="268" y="56" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#146a5c">LPWM</text>
+
+  <!-- D7 L_EN teal -->
+  <line x1="300" y1="140" x2="300" y2="90" stroke="#146a5c" stroke-width="1.5" />
+  <circle cx="300" cy="140" r="6" fill="#146a5c" />
+  <text x="300" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">7</text>
+  <text x="300" y="78" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#146a5c">L_EN</text>
+
+  <line x1="326" y1="130" x2="326" y2="150" stroke="#1b2420" stroke-opacity="0.2" stroke-dasharray="2 3" />
+
+  <!-- D8 L_IS teal -->
+  <line x1="352" y1="140" x2="352" y2="70" stroke="#146a5c" stroke-width="1.5" />
+  <circle cx="352" cy="140" r="6" fill="#146a5c" />
+  <text x="352" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">8</text>
+  <text x="352" y="56" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#146a5c">L_IS</text>
+
+  <!-- D9 LED_FWD amber -->
+  <line x1="384" y1="140" x2="384" y2="90" stroke="#b3701a" stroke-width="1.5" />
+  <circle cx="384" cy="140" r="6" fill="#b3701a" />
+  <text x="384" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">9</text>
+  <text x="384" y="78" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#b3701a">LED_FWD</text>
+
+  <!-- D10 LED_REV amber -->
+  <line x1="416" y1="140" x2="416" y2="70" stroke="#b3701a" stroke-width="1.5" />
+  <circle cx="416" cy="140" r="6" fill="#b3701a" />
+  <text x="416" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">10</text>
+  <text x="416" y="56" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#b3701a">LED_REV</text>
+
+  <!-- D11 SWC_FWD blue -->
+  <line x1="448" y1="140" x2="448" y2="90" stroke="#285f8f" stroke-width="1.5" />
+  <circle cx="448" cy="140" r="6" fill="#285f8f" />
+  <text x="448" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">11</text>
+  <text x="448" y="78" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#285f8f">SWC_FWD</text>
+
+  <!-- D12 SWC_REV blue -->
+  <line x1="480" y1="140" x2="480" y2="70" stroke="#285f8f" stroke-width="1.5" />
+  <circle cx="480" cy="140" r="6" fill="#285f8f" />
+  <text x="480" y="168" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" font-weight="700" fill="#1b2420">12</text>
+  <text x="480" y="56" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#285f8f">SWC_REV</text>
+
+  <g font-family="ui-monospace, Consolas, monospace" font-size="11" fill="#1b2420">
+    <circle cx="512" cy="140" r="5" fill="#1b2420" opacity="0.25" />
+    <text x="512" y="168" text-anchor="middle" opacity="0.55">13</text>
+    <circle cx="544" cy="140" r="5" fill="#1b2420" opacity="0.25" />
+    <text x="544" y="168" text-anchor="middle" opacity="0.55">GND</text>
+    <circle cx="576" cy="140" r="5" fill="#1b2420" opacity="0.25" />
+    <text x="576" y="168" text-anchor="middle" opacity="0.55">AREF</text>
+  </g>
+
+  <text x="450" y="288" text-anchor="middle" font-family="ui-monospace, Consolas, monospace" font-size="10" fill="#1b2420" opacity="0.5">DIGITAL header (top edge) &#8212; identical on Uno and Zero</text>
+</svg>
